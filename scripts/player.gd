@@ -11,13 +11,13 @@ const JUMP_VELOCITY = -400.0
 @onready var animated_sprite_2d = $AnimatedSprite2D
 @onready var shoot_timer = $shootTimer
 
-
 # Get the gravity from the project settings to be synced with RigidBody nodes.
 var gravity = ProjectSettings.get_setting("physics/2d/default_gravity")
 
 func _ready():
 	shoot_timer.wait_time = shoot_cooldown
-
+	
+	
 func _physics_process(delta):
 	# Add the gravity.
 	if not is_on_floor():
@@ -78,10 +78,13 @@ func shoot(height):
 		$shootTimer.start()
 		
 func check_for_hitting(height):
+	var damage = 0
 	var raycasts = $raycasts
 	if height == "head":
+		damage = 2
 		raycasts = $"raycasts/raycasts_head".get_children()
 	elif height == "chest":
+		damage = 1
 		raycasts = $"raycasts/raycasts_chest".get_children()
 	else:
 		print("not working")
@@ -89,7 +92,6 @@ func check_for_hitting(height):
 	for raycast in raycasts:
 		if raycast.is_colliding() and can_shoot:
 			var object_hit = raycast.get_collider()
-			if object_hit:
-				object_hit.animated_sprite_2d.play("hurt")
-				object_hit.health -= 1
+			if object_hit and object_hit.has_method("take_damage"):
+					object_hit.take_damage(damage)
 			break

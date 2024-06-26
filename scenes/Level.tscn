@@ -922,7 +922,13 @@ layer_0/tile_data = PackedInt32Array(1769501, 0, 6, 1835037, 196608, 3, 1769502,
 
 [node name="enemy" parent="." instance=ExtResource("3_oo8jl")]
 position = Vector2(886, 321)
+health = 10.0
 
 [node name="player" parent="." instance=ExtResource("2_e50qh")]
-position = Vector2(252, 305)
-shoot_cooldown = 0.05
+position = Vector2(256, 387)
+shoot_cooldown = 0.25
+
+[node name="Camera2D" type="Camera2D" parent="player"]
+
+[node name="enemy2" parent="." instance=ExtResource("3_oo8jl")]
+position = Vector2(65, 349)

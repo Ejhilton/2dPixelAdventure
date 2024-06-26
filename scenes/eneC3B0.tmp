@@ -1,0 +1,160 @@
+[gd_scene load_steps=21 format=3 uid="uid://cby1h10rwfn52"]
+
+[ext_resource type="Script" path="res://scripts/enemy.gd" id="1_1xl7m"]
+[ext_resource type="Texture2D" uid="uid://pqss0gkv6jux" path="res://assets/enemies/1/Idle.png" id="1_d3hus"]
+[ext_resource type="Texture2D" uid="uid://cxoajro7j0goe" path="res://assets/enemies/1/Hurt.png" id="2_dptls"]
+[ext_resource type="Texture2D" uid="uid://7w06ncffocpv" path="res://assets/enemies/1/Walk.png" id="2_jcy8x"]
+[ext_resource type="Script" path="res://addons/godot_state_charts/state_chart.gd" id="5_impkk"]
+[ext_resource type="Script" path="res://addons/godot_state_charts/compound_state.gd" id="6_0koyc"]
+[ext_resource type="Script" path="res://addons/godot_state_charts/atomic_state.gd" id="7_k4rdf"]
+[ext_resource type="Script" path="res://addons/godot_state_charts/transition.gd" id="8_ioib4"]
+[ext_resource type="PackedScene" uid="uid://bcwkugn6v3oy7" path="res://addons/godot_state_charts/utilities/state_chart_debugger.tscn" id="9_58pmr"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_mr0h5"]
+size = Vector2(23.0556, 32.5)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_uglat"]
+atlas = ExtResource("2_dptls")
+region = Rect2(0, 12, 48, 36)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_45642"]
+atlas = ExtResource("2_dptls")
+region = Rect2(48, 12, 48, 36)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_tvwhi"]
+atlas = ExtResource("1_d3hus")
+region = Rect2(0, 15, 48, 33)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_xxdr4"]
+atlas = ExtResource("1_d3hus")
+region = Rect2(48, 15, 48, 33)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_qph32"]
+atlas = ExtResource("1_d3hus")
+region = Rect2(96, 15, 48, 33)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_vylda"]
+atlas = ExtResource("1_d3hus")
+region = Rect2(144, 15, 48, 33)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_xwitw"]
+atlas = ExtResource("2_jcy8x")
+region = Rect2(192, 14, 48, 34)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_gq13g"]
+atlas = ExtResource("2_jcy8x")
+region = Rect2(240, 14, 48, 34)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_24ju0"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_uglat")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_45642")
+}],
+"loop": false,
+"name": &"hurt",
+"speed": 10.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_tvwhi")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_xxdr4")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_qph32")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_vylda")
+}],
+"loop": true,
+"name": &"idle",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_xwitw")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_gq13g")
+}],
+"loop": true,
+"name": &"walk",
+"speed": 10.0
+}]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_65186"]
+radius = 160.028
+
+[node name="enemy" type="CharacterBody2D"]
+collision_layer = 2
+collision_mask = 3
+script = ExtResource("1_1xl7m")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(1.75, 0.750001)
+scale = Vector2(1.8, 1.8)
+shape = SubResource("RectangleShape2D_mr0h5")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+position = Vector2(19, 0)
+scale = Vector2(1.8, 1.8)
+sprite_frames = SubResource("SpriteFrames_24ju0")
+animation = &"hurt"
+autoplay = "idle"
+frame = 1
+frame_progress = 1.0
+
+[node name="HealthBar" type="ProgressBar" parent="."]
+modulate = Color(0.78577, 0, 0.0866924, 1)
+offset_left = -20.0
+offset_top = -39.0
+offset_right = 24.0
+offset_bottom = -32.0
+show_percentage = false
+
+[node name="Vision" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Vision"]
+shape = SubResource("CircleShape2D_65186")
+
+[node name="StateChart" type="Node" parent="."]
+script = ExtResource("5_impkk")
+
+[node name="Root" type="Node" parent="StateChart"]
+script = ExtResource("6_0koyc")
+initial_state = NodePath("idle")
+
+[node name="idle" type="Node" parent="StateChart/Root"]
+script = ExtResource("7_k4rdf")
+
+[node name="to attack" type="Node" parent="StateChart/Root/idle"]
+script = ExtResource("8_ioib4")
+to = NodePath("../../attack")
+event = &"player_entered"
+delay_in_seconds = "0.0"
+
+[node name="attack" type="Node" parent="StateChart/Root"]
+script = ExtResource("7_k4rdf")
+
+[node name="to idle" type="Node" parent="StateChart/Root/attack"]
+script = ExtResource("8_ioib4")
+to = NodePath("../../idle")
+event = &"player_exited"
+delay_in_seconds = "0.0"
+
+[node name="StateChartDebugger" parent="." instance=ExtResource("9_58pmr")]
+offset_left = -394.0
+offset_top = -239.0
+offset_right = -62.0
+offset_bottom = 30.0
+initial_node_to_watch = NodePath("../StateChart")
+
+[connection signal="animation_finished" from="AnimatedSprite2D" to="." method="_on_animated_sprite_2d_animation_finished"]
+[connection signal="body_entered" from="Vision" to="." method="_on_vision_body_entered"]
+[connection signal="body_exited" from="Vision" to="." method="_on_vision_body_exited"]
+[connection signal="state_processing" from="StateChart/Root/attack" to="." method="_on_attack_state_processing"]

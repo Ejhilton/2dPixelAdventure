@@ -31,39 +31,32 @@ func _physics_process(delta):
 	# As good practice, you should replace UI actions with custom gameplay actions.
 	var direction = Input.get_axis("move_left", "move_right")
 	if direction:
+		if direction < 0:
+			animated_sprite_2d.flip_h = true
+		else:
+			animated_sprite_2d.flip_h = false
+			
 		if Input.is_action_pressed("sprint"):
 			velocity.x = direction * SPEED
+			animated_sprite_2d.play("run")
 		else:
 			velocity.x = direction * WALKSPEED
-	else:
-		if is_on_floor():
-			velocity.x = move_toward(velocity.x, 0, SPEED)
-		
-	if direction > 0:
-		if Input.is_action_pressed("sprint"):
-			animated_sprite_2d.play("run")
-		else:
 			animated_sprite_2d.play("walk")
-		animated_sprite_2d.flip_h = false
-		
-	elif direction < 0:
-		if Input.is_action_pressed("sprint"):
-			animated_sprite_2d.play("run")
+			
+	elif is_on_floor():
+		velocity.x = move_toward(velocity.x, 0, SPEED)
+		if Input.is_action_pressed("shoot_1"):
+			animated_sprite_2d.play("shot_1")
+			shoot("chest")
+		elif Input.is_action_pressed("shoot_2"):
+			animated_sprite_2d.play("shot_2")
+			shoot("head")
 		else:
-			animated_sprite_2d.play("walk")
-		animated_sprite_2d.flip_h = true
+			animated_sprite_2d.play("idle")
+	
+	if not is_on_floor():
+		animated_sprite_2d.play("jump")
 		
-	else:
-		if is_on_floor():
-			if Input.is_action_pressed("shoot_1"):
-				animated_sprite_2d.play("shot_1")
-				shoot("chest")
-			elif Input.is_action_pressed("shoot_2"):
-				animated_sprite_2d.play("shot_2")
-				shoot("head")
-			else:
-				animated_sprite_2d.play("idle")
-				
 	move_and_slide()
 
 
@@ -79,19 +72,22 @@ func shoot(height):
 		
 func check_for_hitting(height):
 	var damage = 0
-	var raycasts = $raycasts
+	var raycast_direction = null
 	if height == "head":
 		damage = 2
-		raycasts = $"raycasts/raycasts_head".get_children()
 	elif height == "chest":
 		damage = 1
-		raycasts = $"raycasts/raycasts_chest".get_children()
 	else:
 		print("not working")
 		
-	for raycast in raycasts:
-		if raycast.is_colliding() and can_shoot:
-			var object_hit = raycast.get_collider()
-			if object_hit and object_hit.has_method("take_damage"):
-					object_hit.take_damage(damage)
-			break
+	if animated_sprite_2d.flip_h:
+		raycast_direction = "left"
+	else:
+		raycast_direction = "right"
+		
+	var raycast_path = "raycasts/raycasts_" + height + "/RayCast2D_" + height + "_" + raycast_direction
+	var raycast = get_node(raycast_path)
+	if raycast.is_colliding() and can_shoot:
+		var object_hit = raycast.get_collider()
+		if object_hit and object_hit.has_method("take_damage"):
+				object_hit.take_damage(damage)

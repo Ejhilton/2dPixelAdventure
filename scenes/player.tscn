@@ -1,4 +1,4 @@
-[gd_scene load_steps=44 format=3 uid="uid://ds8byjsdcox0n"]
+[gd_scene load_steps=47 format=3 uid="uid://ds8byjsdcox0n"]
 
 [ext_resource type="Script" path="res://scripts/player.gd" id="1_qst50"]
 [ext_resource type="Texture2D" uid="uid://c5gki7jiwk2ru" path="res://assets/Soldier_1/Dead.png" id="1_rf165"]
@@ -51,6 +51,18 @@ region = Rect2(640, 60, 128, 68)
 [sub_resource type="AtlasTexture" id="AtlasTexture_lg7e5"]
 atlas = ExtResource("1_t7pwl")
 region = Rect2(768, 60, 128, 68)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_72280"]
+atlas = ExtResource("2_tuag0")
+region = Rect2(512, 63, 128, 65)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_7o032"]
+atlas = ExtResource("2_tuag0")
+region = Rect2(640, 63, 128, 65)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_2i27x"]
+atlas = ExtResource("2_tuag0")
+region = Rect2(768, 63, 128, 65)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_igroe"]
 atlas = ExtResource("2_tuag0")
@@ -191,6 +203,20 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
+"texture": SubResource("AtlasTexture_72280")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_7o032")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_2i27x")
+}],
+"loop": true,
+"name": &"jump",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
 "texture": SubResource("AtlasTexture_igroe")
 }, {
 "duration": 1.0,
@@ -291,7 +317,7 @@ shoot_cooldown = 1.0
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 sprite_frames = SubResource("SpriteFrames_nox15")
-animation = &"shot_2"
+animation = &"jump"
 autoplay = "idle"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
@@ -331,5 +357,4 @@ collision_mask = 2
 [node name="shootTimer" type="Timer" parent="."]
 one_shot = true
 
-[connection signal="animation_finished" from="AnimatedSprite2D" to="." method="_on_animated_sprite_2d_animation_finished"]
 [connection signal="timeout" from="shootTimer" to="." method="_on_shoot_timer_timeout"]

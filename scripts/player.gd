@@ -1,12 +1,14 @@
 extends CharacterBody2D
 
 
-const SPEED = 300.0
+@export var SPEED = 300.0
 const WALKSPEED = 100
 const JUMP_VELOCITY = -400.0
 
 @export_range(0.01, 20) var shoot_cooldown: float = 20
 @export var can_shoot = true
+@export var head_damage = 2
+@export var chest_damage = 1
 
 @onready var animated_sprite_2d = $AnimatedSprite2D
 @onready var shoot_timer = $shootTimer
@@ -74,9 +76,9 @@ func check_for_hitting(height):
 	var damage = 0
 	var raycast_direction = null
 	if height == "head":
-		damage = 2
+		damage = head_damage
 	elif height == "chest":
-		damage = 1
+		damage = chest_damage
 	else:
 		print("not working")
 		

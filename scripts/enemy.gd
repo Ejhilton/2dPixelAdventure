@@ -7,7 +7,6 @@ extends CharacterBody2D
 var enemy_to_attack = null
 var enemy_seen = 0
 var enemy_speed = 100
-
 var direction
 
 var gravity = ProjectSettings.get_setting("physics/2d/default_gravity")
